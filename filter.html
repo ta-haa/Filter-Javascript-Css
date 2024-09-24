@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+
+<!-- https://www.youtube.com/@TahaKeskin -->
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Table Filter</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <style>
+        :root {
+            --bgSoft: #f0f0f0;
+            --textSoft: #333;
+            --borderColor: #ccc;
+            --focusBorderColor: #007bff;
+            --placeholderColor: #999;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            color: var(--textSoft);
+            background-color: var(--bgSoft);
+        }
+
+        .container {
+            padding: 20px;
+            max-width: 84.8vw;
+            margin: 0 auto;
+        }
+
+        .header {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            background-color: #ffffff;
+            padding: 10px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        .header .title {
+            margin: 0;
+            font-weight: 200;
+            color: var(--textSoft);
+            flex: 1 1 auto;
+        }
+
+        .filter {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+            width: 100%;
+        }
+
+        .form-group {
+            position: relative;
+            width: 150px;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 8px;
+            box-sizing: border-box;
+            border: 1px solid var(--borderColor);
+            border-radius: 4px;
+            outline: none;
+            font-size: 14px;
+            background-color: transparent;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            border-color: var(--focusBorderColor);
+            box-shadow: 0 1px 0 0 var(--focusBorderColor);
+        }
+
+        .form-group input::placeholder,
+        .form-group select::placeholder {
+            color: transparent;
+        }
+
+        .form-group .label {
+            position: absolute;
+            top: 12px;
+            left: 8px;
+            font-size: 14px;
+            color: var(--placeholderColor);
+            pointer-events: none;
+            transition: all 0.3s ease;
+            transform: translateY(0);
+        }
+
+        .form-group input:focus ~ .label,
+        .form-group select:focus ~ .label,
+        .form-group input:not(:placeholder-shown) ~ .label,
+        .form-group select:not(:placeholder-shown) ~ .label {
+            top: -10px;
+            left: 8px;
+            font-size: 12px;
+            color: var(--focusBorderColor);
+            background-color: #fff;
+            padding: 0 4px;
+            transform: translateY(0);
+        }
+
+        .form-group input:focus ~ .underline,
+        .form-group select:focus ~ .underline {
+            width: 100%;
+            background-color: var(--focusBorderColor);
+        }
+
+        .underline {
+            height: 2px;
+            width: 0;
+            background-color: var(--borderColor);
+            transition: width 0.3s ease;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+        }
+
+        .filter button {
+            padding: 8px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+
+        .filter button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header"> 
+            <div class="filter">
+                <div class="form-group">
+                    <input type="text" id="id" placeholder=" ">
+                    <label for="id" class="label">ID:</label>
+                    <div class="underline"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="email" id="email" placeholder=" ">
+                    <label for="email" class="label">Email:</label>
+                    <div class="underline"></div>
+                </div>
+
+                <div class="form-group">
+                    <select id="verification">
+                        <option value="">Select</option>
+                        <option value="verified">Verified</option>
+                        <option value="unverified">Unverified</option>
+                    </select>
+                    <label for="verification" class="label">Verification:</label>
+                    <div class="underline"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" id="ip-address" placeholder=" ">
+                    <label for="ip-address" class="label">IP Address:</label>
+                    <div class="underline"></div>
+                </div>
+
+                <div class="form-group">
+                    <input type="date" id="registration-date">
+                    <label for="registration-date" class="label">Registration Date:</label>
+                    <div class="underline"></div>
+                </div>
+
+                <button id="filter-button" class="tablesearch">Filter</button>
+            </div>
+        </div>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const idInput = document.getElementById('id');
+                const emailInput = document.getElementById('email');
+                const verificationSelect = document.getElementById('verification');
+                const ipAddressInput = document.getElementById('ip-address');
+                const registrationDateInput = document.getElementById('registration-date');
+                const filterButton = document.getElementById('filter-button');
+
+                filterButton.addEventListener('click', () => {
+                    const id = idInput.value;
+                    const email = emailInput.value;
+                    const verification = verificationSelect.value;
+                    const ipAddress = ipAddressInput.value;
+                    const registrationDate = registrationDateInput.value;
+
+                    // Here you can handle the filter logic, for now we'll just log the values
+                    console.log({
+                        id,
+                        email,
+                        verification,
+                        ipAddress,
+                        registrationDate
+                    });
+
+                    // Example of making an API call with the filter values
+                    axios.get('http://localhost:8080/api/v1/employee/filter', {
+                        params: {
+                            id,
+                            email,
+                            verification,
+                            ipAddress,
+                            registrationDate
+                        },
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': Bearer ${localStorage.getItem('token')}
+                        }
+                    }).then(response => {
+                        console.log('Filtered data:', response.data);
+                    }).catch(error => {
+                        console.error('Error fetching data:', error);
+                    });
+                });
+            });
+        </script>
+    </div>
+</body>
+</html>
+
+
